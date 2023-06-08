@@ -25,6 +25,32 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
+
+
+        const userCollection = client.db('summerDb').collection('users')
+
+        // 
+        // app.get('/classes', async(req, res)=>{
+        //     const 
+        // })
+
+
+        // save user email and role in mongodb
+        app.put('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body
+            const query = { email: email }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: user
+            }
+            const result = await userCollection.updateOne(query, updateDoc, options)
+            res.send(result)
+        })
+
+
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
