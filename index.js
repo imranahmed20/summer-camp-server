@@ -33,9 +33,12 @@ async function run() {
         const addClassCollection = client.db('summerDb').collection('classes')
 
         // 
-        // app.get('/classes', async(req, res)=>{
-        //     const 
-        // })
+        app.get('/class', async (req, res) => {
+            const result = await classCollection.find().toArray()
+            res.send(result)
+        })
+
+        
 
 
 
