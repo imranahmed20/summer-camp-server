@@ -32,20 +32,16 @@ async function run() {
         const instructorCollection = client.db('summerDb').collection('class')
         const addClassCollection = client.db('summerDb').collection('classes')
 
-        // 
+        // class relate api
         app.get('/class', async (req, res) => {
             const result = await classCollection.find().toArray()
             res.send(result)
         })
-
+        // 
         app.get('/instructor', async (req, res) => {
             const result = await instructorCollection.find().toArray()
             res.send(result)
         })
-
-
-
-
 
 
         // save user email and role in mongodb
