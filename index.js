@@ -33,11 +33,7 @@ async function run() {
         const addClassCollection = client.db('summerDb').collection('classes')
 
 
-        app.post('/users', async (req, res) => {
-            const user = req.body;
-            const result = await userCollection.insertOne(user)
-            res.send(result)
-        })
+
 
         // class relate api
         app.get('/class', async (req, res) => {
@@ -47,6 +43,11 @@ async function run() {
         // 
         app.get('/instructor', async (req, res) => {
             const result = await instructorCollection.find().toArray()
+            res.send(result)
+        })
+
+        app.get('/users', async (req, res) => {
+            const result = await userCollection.find().toArray()
             res.send(result)
         })
 
@@ -85,7 +86,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await addClassCollection.deleteOne(query)
-            res.send()
+            res.send(result)
         })
 
 
