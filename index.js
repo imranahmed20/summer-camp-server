@@ -32,6 +32,13 @@ async function run() {
         const instructorCollection = client.db('summerDb').collection('class')
         const addClassCollection = client.db('summerDb').collection('classes')
 
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user)
+            res.send(result)
+        })
+
         // class relate api
         app.get('/class', async (req, res) => {
             const result = await classCollection.find().toArray()
