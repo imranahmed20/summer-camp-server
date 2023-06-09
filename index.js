@@ -28,11 +28,14 @@ async function run() {
 
 
         const userCollection = client.db('summerDb').collection('users')
+        const addClassCollection = client.db('summerDb').collection('classes')
 
         // 
         // app.get('/classes', async(req, res)=>{
         //     const 
         // })
+
+
 
 
         // save user email and role in mongodb
@@ -48,6 +51,12 @@ async function run() {
             res.send(result)
         })
 
+
+        app.post('/classes', async (req, res) => {
+            const item = res.body;
+            const result = addClassCollection.insertOne(item)
+            res.send(result)
+        })
 
 
 
