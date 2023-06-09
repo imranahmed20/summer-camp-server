@@ -28,6 +28,8 @@ async function run() {
 
 
         const userCollection = client.db('summerDb').collection('users')
+        const classCollection = client.db('summerDb').collection('instructor')
+        const instructorCollection = client.db('summerDb').collection('class')
         const addClassCollection = client.db('summerDb').collection('classes')
 
         // 
@@ -51,9 +53,18 @@ async function run() {
             res.send(result)
         })
 
-
+        // add classes 
+        app.get('/classes', async (req, res) => {
+            const email = req.query.email;
+            if (!email) {
+                res.send([])
+            }
+            const query = { email: email }
+            const result = await addClassCollection.find(query).toArray()
+            res.send(result)
+        })
         app.post('/classes', async (req, res) => {
-            const item = res.body;
+            const item = req.body;
             const result = addClassCollection.insertOne(item)
             res.send(result)
         })
