@@ -16,6 +16,7 @@ const verifyJWT = (req, res, next) => {
         return res.status(401).send(({ error: true, message: "Unauthorized access" }))
     }
 
+    // const token = authorization.split(' ')[1]
     const token = authorization.split(' ')[1]
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
         if (error) {
@@ -85,7 +86,7 @@ async function run() {
 
         // security added
 
-        app.get('/users/admin/:id', verifyJWT, async (req, res) => {
+        app.get('/users/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             if (req.decoded.email !== email) {
                 return send({ admin: false })
@@ -102,6 +103,29 @@ async function run() {
             const updateDoc = {
                 $set: {
                     role: 'admin'
+                }
+            }
+            const result = await userCollection.updateOne(filter, updateDoc)
+            res.send(result)
+        })
+
+        app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            if (req.decoded.email !== email) {
+                return send({ admin: false })
+            }
+            const query = { email: email }
+            const user = await userCollection.findOne(query)
+            const result = { admin: user?.role == "instructor" }
+            res.send(result)
+        })
+
+        app.patch('/users/instructor/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    role: 'instructor'
                 }
             }
             const result = await userCollection.updateOne(filter, updateDoc)
