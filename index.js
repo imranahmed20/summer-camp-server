@@ -63,24 +63,24 @@ async function run() {
 
         })
 
-        // const verifyAdmin = async (req, res, next) => {
-        //     const email = req.decoded.email;
-        //     const query = { email: email }
-        //     const user = await userCollection.findOne(query)
-        //     if (user?.role !== 'admin') {
-        //         return res.status(403).send({ error: true, message: "forbidden message" })
-        //     }
-        //     next()
-        // }
-        // const verifyInstructor = async (req, res, next) => {
-        //     const email = req.decoded.email;
-        //     const query = { email: email }
-        //     const user = await userCollection.findOne(query)
-        //     if (user?.role !== 'instructor') {
-        //         return res.status(403).send({ error: true, message: "forbidden message" })
-        //     }
-        //     next()
-        // }
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email }
+            const user = await userCollection.findOne(query)
+            if (user?.role !== 'admin') {
+                return res.status(403).send({ error: true, message: "forbidden message" })
+            }
+            next()
+        }
+        const verifyInstructor = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email }
+            const user = await userCollection.findOne(query)
+            if (user?.role !== 'instructor') {
+                return res.status(403).send({ error: true, message: "forbidden message" })
+            }
+            next()
+        }
 
         // class relate api
         app.get('/class', async (req, res) => {
@@ -96,7 +96,7 @@ async function run() {
         })
 
 
-        app.post('/instructor', verifyInstructor, async (req, res) => {
+        app.post('/instructor', async (req, res) => {
             const newClass = req.body;
             const result = await classCollection.insertOne(newClass)
             res.send(result)
@@ -121,7 +121,7 @@ async function run() {
 
         // security added
 
-        app.get('/users/admin/:email', verifyJWT, async (req, res) => {
+        app.get('/users/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const email = req.params.email;
             if (req.decoded.email !== email) {
                 return send({ admin: false })
@@ -145,7 +145,7 @@ async function run() {
         })
 
         //instructor
-        app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
+        app.get('/users/instructor/:email', verifyJWT, verifyInstructor, async (req, res) => {
             const email = req.params.email;
             if (req.decoded.email !== email) {
                 return send({ instructor: false })
@@ -215,19 +215,17 @@ async function run() {
             res.send(result)
         })
 
+        // const decodedEmail = req.decoded.email;
+        // if (email !== decodedEmail) {
+        //     return res.status(401).send({ error: true, message: 'forbidden access' })
 
+        // }
 
         // add classes 
         app.get('/classes', async (req, res) => {
             const email = req.query.email;
             if (!email) {
                 res.send([])
-            }
-
-            const decodedEmail = req.decoded.email;
-            if (email !== decodedEmail) {
-                return res.status(401).send({ error: true, message: 'forbidden access' })
-
             }
             const query = { email: email }
             const result = await addClassCollection.find(query).toArray()
