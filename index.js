@@ -30,6 +30,8 @@ const verifyJWT = (req, res, next) => {
 }
 
 
+
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9qf7kmv.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -61,6 +63,25 @@ async function run() {
 
         })
 
+        // const verifyAdmin = async (req, res, next) => {
+        //     const email = req.decoded.email;
+        //     const query = { email: email }
+        //     const user = await userCollection.findOne(query)
+        //     if (user?.role !== 'admin') {
+        //         return res.status(403).send({ error: true, message: "forbidden message" })
+        //     }
+        //     next()
+        // }
+        // const verifyInstructor = async (req, res, next) => {
+        //     const email = req.decoded.email;
+        //     const query = { email: email }
+        //     const user = await userCollection.findOne(query)
+        //     if (user?.role !== 'instructor') {
+        //         return res.status(403).send({ error: true, message: "forbidden message" })
+        //     }
+        //     next()
+        // }
+
         // class relate api
         app.get('/class', async (req, res) => {
             const result = await classCollection.find().toArray()
@@ -75,7 +96,7 @@ async function run() {
         })
 
 
-        app.post('/class', async (req, res) => {
+        app.post('/instructor', verifyInstructor, async (req, res) => {
             const newClass = req.body;
             const result = await classCollection.insertOne(newClass)
             res.send(result)
@@ -134,6 +155,16 @@ async function run() {
             const result = { instructor: user?.role == "instructor" }
             res.send(result)
         })
+        app.get('/users/student/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            if (req.decoded.email !== email) {
+                return send({ student: false })
+            }
+            const query = { email: email }
+            const user = await userCollection.findOne(query)
+            const result = { instructor: user?.role == "student" }
+            res.send(result)
+        })
 
         app.patch('/users/instructor/:id', async (req, res) => {
             const id = req.params.id;
@@ -187,7 +218,7 @@ async function run() {
 
 
         // add classes 
-        app.get('/classes', verifyJWT, async (req, res) => {
+        app.get('/classes', async (req, res) => {
             const email = req.query.email;
             if (!email) {
                 res.send([])
