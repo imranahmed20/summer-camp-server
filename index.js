@@ -84,7 +84,7 @@ async function run() {
 
         // class relate api
         app.get('/class', async (req, res) => {
-            const result = await classCollection.find().toArray()
+            const result = await instructorCollection.find().toArray()
             res.send(result)
         })
 
@@ -103,7 +103,7 @@ async function run() {
         })
         // 
         app.get('/instructor', async (req, res) => {
-            const result = await instructorCollection.find().toArray()
+            const result = await classCollection.find().toArray()
             res.send(result)
         })
 
@@ -215,11 +215,7 @@ async function run() {
             res.send(result)
         })
 
-        // const decodedEmail = req.decoded.email;
-        // if (email !== decodedEmail) {
-        //     return res.status(401).send({ error: true, message: 'forbidden access' })
-
-        // }
+       
 
         // add classes 
         app.get('/classes', async (req, res) => {
